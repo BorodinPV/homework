@@ -9,9 +9,6 @@ import org.apache.log4j.Logger;
 public class Errors {
     private static final Logger log = Logger.getLogger(Errors.class);
 
-    /**
-     *
-     */
     public void modelingErrors() {
         //Финт исключительно для ДЗ
         Object[] objects = {null};
