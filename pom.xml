@@ -20,6 +20,10 @@
         </plugins>
     </build>
 
+    <modules>
+        <module>src/main/java/lesson07</module>
+    </modules>
+
     <dependencies>
         <dependency>
             <groupId>log4j</groupId>
