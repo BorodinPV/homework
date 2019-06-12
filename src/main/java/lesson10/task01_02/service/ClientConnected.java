@@ -4,8 +4,6 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.net.Socket;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * Created by Pavel Borodin on 2019-06-10
@@ -15,12 +13,23 @@ public class ClientConnected {
     private BufferedReader in;
     private BufferedWriter out;
     private BufferedReader inputUser;
-    private String nickname;
+    private String host;
+    private int port;
+
     private static final Logger log = Logger.getLogger(ClientConnected.class);
 
-    public ClientConnected(String addr, int port) {
+    public ClientConnected(String host, int port) {
+        this.host = host;
+        this.port = port;
+    }
+
+    /**
+     * Создаем коннект
+     * @author Pavel Borodin
+     */
+    public void connected() {
         try {
-            this.socket = new Socket(addr, port);
+            this.socket = new Socket(host, port);
         } catch (IOException e) {
             log.info("Socket failed");
         }
@@ -28,19 +37,18 @@ public class ClientConnected {
             inputUser = new BufferedReader(new InputStreamReader(System.in));
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            this.getNickName();
             new ClientConnected.ReadMsg().start();
             new ClientConnected.WriteMsg().start();
+            this.getNickName();
         } catch (Exception e) {
             ClientConnected.this.downService();
         }
     }
 
     private void getNickName() {
-        log.info("Введите свой ник: ");
         try {
-            nickname = inputUser.readLine();
-            sendMessage("Привет " + nickname + "\n");
+            log.info("Введите никнейм");
+            sendMessage(inputUser.readLine());
         } catch (IOException ignored) {
         }
 
@@ -57,6 +65,10 @@ public class ClientConnected {
         }
     }
 
+    /**
+     * Нить для чтения
+     * @author Pavel Borodin
+     */
     private class ReadMsg extends Thread {
         @Override
         public void run() {
@@ -77,6 +89,10 @@ public class ClientConnected {
         }
     }
 
+    /**
+     * Отправка сообщения
+     * @author Pavel Borodin
+     */
     private void sendMessage(String message) {
         try {
             out.write(message);
@@ -86,6 +102,10 @@ public class ClientConnected {
         }
     }
 
+    /**
+     * Нить для записи
+     * @author Pavel Borodin
+     */
     public class WriteMsg extends Thread {
 
         @Override
@@ -99,9 +119,7 @@ public class ClientConnected {
                         ClientConnected.this.downService();
                         break;
                     } else {
-                        sendMessage("(" + LocalDateTime.now()
-                                .format(DateTimeFormatter.ofPattern("dd-mm-yyyy HH:mm:ss")) + ") " +
-                                nickname + ": " + userWord + "\n");
+                        sendMessage(userWord + "\n");
                     }
                 } catch (IOException e) {
                     ClientConnected.this.downService();

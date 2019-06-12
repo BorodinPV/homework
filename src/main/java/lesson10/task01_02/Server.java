@@ -1,7 +1,6 @@
 package lesson10.task01_02;
 
 import lesson10.task01_02.service.ServerConnected;
-import lesson10.task01_02.service.Story;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -14,12 +13,10 @@ import java.util.LinkedList;
 public class Server {
     public static final int PORT = 4999;
     public static LinkedList<ServerConnected> serverList = new LinkedList<>();
-    public static Story story;
 
     public static void main(String[] args) throws IOException {
         ServerSocket server = new ServerSocket(PORT);
-        story = new Story();
-        System.out.println("Server Started");
+        System.out.println("Сервер запущен");
         try {
             while (true) {
                 Socket socket = server.accept();
