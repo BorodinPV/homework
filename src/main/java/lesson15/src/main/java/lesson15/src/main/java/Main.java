@@ -1,6 +1,7 @@
 package lesson15.src.main.java;
 
 import config.JdbcConfig;
+import org.apache.log4j.Logger;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -10,11 +11,14 @@ import java.util.Objects;
  * Created by Pavel Borodin on 2019-07-01
  */
 public class Main {
+    private static final Logger log = Logger.getLogger(Main.class);
     public static void main(String[] args) {
         Connection connection = null;
         try {
             connection = JdbcConfig.getInstance().getConnection();
+            log.info("Start jdbc");
         } catch (SQLException e) {
+           log.error("Exception " + e);
             e.printStackTrace();
         }
 
@@ -25,6 +29,7 @@ public class Main {
         String querySelect = "SELECT * FROM postgres.public.user WHERE login_id = ? and name = ?";
 
         try {
+            log.info("Start");
             executeQuery(connection, statement);
             prepareStatExecute(connection, preparedStatement, query);
             batchQuery(connection, statement);
@@ -32,11 +37,13 @@ public class Main {
             savepointQuery(connection, statement, query); //postgres 7.0
 
         } catch (SQLException e) {
+            log.error("Exception " + e);
             e.printStackTrace();
         } finally {
             try {
                 connection.close();
             } catch (Exception e) {
+                log.error("Exception " + e);
                 e.printStackTrace();
             }
         }
@@ -54,6 +61,7 @@ public class Main {
                     "VALUES ('Vladimir', 'test', '123','Moscow','example@example.com', 'null')");
             connection.commit();
         } catch (Exception e) {
+            log.error("Exception " + e);
             connection.rollback(savepoint);
             e.printStackTrace();
         }
